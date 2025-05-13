@@ -1,0 +1,12 @@
+{
+  "menuItems": [
+    {
+      "id": 1,
+      "name": "Classic Cheeseburger",
+      "price": 189,
+      "ingredients": ["Beef", "Cheddar", "Pickles", "Dressing"],
+      "image": "./images/burger-5.png"
+    }
+    
+  ]
+}
