@@ -3,6 +3,7 @@
   height: 80vh;
   width: 100%;
   overflow: hidden;
+  background-color: black;
 }
 
 .hero-image-container {

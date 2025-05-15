@@ -1,19 +1,17 @@
-import React from 'react';
-import '../../components/LandingPage/css/Hero.css';
+import './css/Hero.css';
 
 const Hero = () => {
   return (
     <div className="hero-container">
       <div className="hero-overlay">
         <div className="hero-content">
-          <div className="logo-placeholder" style={{ width: '120px', height: '120px', background: '#f8b500', margin: '0 auto 20px', borderRadius: '50%' }}></div>
+          <div className="logo-placeholder">
+            <img src='../../images/Logo.png' alt="Drone Delights Logo" style={{ width: '120px', height: '120px', borderRadius: '50%' }} />
+          </div>
           <h1 className="hero-title">Drone Delights</h1>
-          <p className="hero-slogan">Gourmet meals delivered at lightning speed</p>
+          <p className="hero-slogan">Meals delivered at drone strike speed</p>
           <button className="order-now-btn">Order Now</button>
         </div>
-      </div>
-      <div className="hero-image-container" style={{ backgroundColor: '#282c34' }}>
-        {/* Placeholder for hero image */}
       </div>
     </div>
   );
