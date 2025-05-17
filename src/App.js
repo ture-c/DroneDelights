@@ -5,6 +5,7 @@ import Header from './components/Layout/Header';
 import LandingPage from './components/LandingPage/LandingPage';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Menu from './components/Menu/Menu';
 import './App.css';
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<LandingPage />} />
-            {/* Add more routes here */}
+            <Route path="/menu" element={<Menu />} />
           </Routes>
         </div>
       </Router>
