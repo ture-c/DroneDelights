@@ -3,10 +3,70 @@
     {
       "id": 1,
       "name": "Classic Cheeseburger",
+      "Category": "burger",
+      "description": "A classic cheeseburger with a juicy beef patty, melted cheese, and all the fixings.",
       "price": 189,
       "ingredients": ["Beef", "Cheddar", "Pickles", "Dressing"],
       "image": "./images/burger-5.png"
+    },
+    {
+      "id": 2,
+      "name": "Black Bun Chickenburger",
+      "Category": "burger",
+      "description": "A unique chicken burger with a black bun, crispy chicken, and a special sauce.",
+      "price": 199,
+      "ingredients": ["Chicken", "Black bun", "Cheddar", "Pickles", "Dressing"],
+      "image": "./images/burger-2.png"
+    },
+    {
+      "id": 3,
+      "name": "Mushroom Cheeseburger",
+      "Category": "burger",
+      "description": "A delicious cheeseburger topped with sautéed mushrooms and melted cheese.",
+      "price": 199,
+      "ingredients": ["Beef", "Mushrooms", "Cheddar", "Pickles", "Dressing"],
+      "image": "./images/burger-7.png"
+    },
+    {
+      "id": 4,
+      "name": "Double Cheeseburger",
+      "Category": "burger",
+      "description": "A hearty double cheeseburger with two beef patties, double cheese, and all the fixings.",
+      "price": 249,
+      "ingredients": ["Beef", "Double cheese", "Pickles", "Dressing"],
+      "image": "./images/burger-9.png"
+    },
+    {
+      "id": 5,
+      "name": "American Oreo Milkshake",
+      "Category": "milkshake",
+      "description": "A rich and creamy milkshake made with Oreos, milk, and ice cream.",
+      "price": 199,
+      "ingredients": ["Oreos", "Milk", "Ice cream"],
+      "image": "./images/milkshake-1.png"
+      
+    },
+    {
+      "id": 6,
+      "name": "Fries",
+      "Category": "fries",
+      "description": "Crispy golden fries, perfect for dipping.",
+      "price": 99,
+      "ingredients": ["Paprika", "Salt"],
+      "image": "./images/fries-1.png"
+      
+    },
+    {
+      "id": 6,
+      "name": "Sweetpotato Fries",
+      "Category": "fries",
+      "description": "Delicious sweet potato fries, a healthier alternative to regular fries.",
+      "price": 89,
+      "ingredients": ["Sweetpotato", "Salt"],
+      "image": "./images/fries-2.png"
+      
     }
+    
     
   ]
 }
