@@ -7,18 +7,18 @@ const Confirmation = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get order details from sessionStorage
+    // Hämta order details från sessionStorage
     const storedOrderDetails = sessionStorage.getItem('orderDetails');
     
     if (!storedOrderDetails) {
-      // No order details found, redirect to home
+      // Inga order details, redirect to home
       navigate('/');
       return;
     }
     
     setOrderDetails(JSON.parse(storedOrderDetails));
     
-    // Animation for drone delivery
+    // Cool animation för drone
     const droneElement = document.querySelector('.drone-animation');
     if (droneElement) {
       setTimeout(() => {
@@ -28,7 +28,7 @@ const Confirmation = () => {
   }, [navigate]);
 
   if (!orderDetails) {
-    return null; // Will redirect in useEffect
+    return null; // Kommer inte att rendera något om orderDetails inte finns
   }
 
   return (

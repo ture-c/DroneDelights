@@ -1,57 +1,51 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import './Auth.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import "./Login.css";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
-    
     try {
-      const result = await login(username, password);
-      if (result.success) {
-        navigate('/');
-      } else {
-        setError(result.error);
-      }
+      await login(email, password);
+      navigate("/");
     } catch (err) {
-      setError('Failed to log in');
-      console.error(err);
+      setError(
+        err.response?.data?.msg ||
+          "Failed to log in. Please check your credentials."
+      );
+      console.error("Login component error:", err);
     }
-    
     setLoading(false);
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form-container">
-        <h2>Login to Drone Delights</h2>
-        
-        {error && <div className="auth-error">{error}</div>}
-        
-        <form onSubmit={handleSubmit} className="auth-form">
+    <div className="login-page">
+      <div className="login-container">
+        <h2>Login</h2>
+        {error && <p className="error-message">{error}</p>}
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email:</label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password:</label>
             <input
               type="password"
               id="password"
@@ -60,29 +54,13 @@ const Login = () => {
               required
             />
           </div>
-          
-          <button 
-            type="submit" 
-            className="auth-button"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        
-        <p className="auth-redirect">
+        <p className="redirect-link">
           Don't have an account? <Link to="/register">Register here</Link>
         </p>
-        
-        <div className="auth-guest">
-          <p>Or continue as a guest</p>
-          <button 
-            className="guest-button"
-            onClick={() => navigate('/')}
-          >
-            Continue to Menu
-          </button>
-        </div>
       </div>
     </div>
   );

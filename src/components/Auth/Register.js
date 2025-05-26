@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import './Auth.css';
+import './Register.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -58,7 +58,7 @@ const Register = () => {
     setLoading(true);
     
     try {
-      // Remove confirmPassword before sending
+      // Remove confirmPassword 
       const userData = {...formData};
       delete userData.confirmPassword;
       

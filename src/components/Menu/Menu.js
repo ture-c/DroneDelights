@@ -16,9 +16,9 @@ const Menu = () => {
       setLoading(true);
       setError(null);
       try {
-        // Se till att din JSON-server körs, vanligtvis på port 3000
+        
         // Endpointen ska matcha nyckeln i din db.json (t.ex. "menuItems")
-        const response = await fetch('http://localhost:3001/menuItems'); // Anpassa port om nödvändigt
+        const response = await fetch('http://localhost:5000/menuItems'); // Anpassa port om nödvändigt
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

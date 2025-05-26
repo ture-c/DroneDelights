@@ -44,7 +44,6 @@
       "price": 199,
       "ingredients": ["Oreos", "Milk", "Ice cream"],
       "image": "./images/milkshake-1.png"
-      
     },
     {
       "id": 6,
@@ -54,19 +53,15 @@
       "price": 99,
       "ingredients": ["Paprika", "Salt"],
       "image": "./images/fries-1.png"
-      
     },
     {
-      "id": 6,
+      "id": 7,
       "name": "Sweetpotato Fries",
       "Category": "fries",
       "description": "Delicious sweet potato fries, a healthier alternative to regular fries.",
       "price": 89,
       "ingredients": ["Sweetpotato", "Salt"],
       "image": "./images/fries-2.png"
-      
     }
-    
-    
   ]
 }

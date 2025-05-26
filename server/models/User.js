@@ -1,37 +1,29 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     unique: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
-    trim: true
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    
+    match: [/\S+@\S+\.\S+/, "is invalid"],
   },
-  address: {
-    street: String,
-    city: String,
-    postalCode: String
+  password: {
+    type: String,
+    required: true,
   },
-  favorites: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'MenuItem'
-  }],
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model("User", UserSchema);

@@ -1,52 +1,82 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext'; 
-import { useCart } from '../../contexts/CartContext';
-import './Header.css';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../contexts/CartContext"; // Import useCart
+import "./Header.css";
 
 const Header = () => {
-  const { isLoggedIn, logout, user } = useAuth();
-  const { cart } = useCart();
+  const { currentUser, logout, loadingAuth } = useAuth();
+  const { totalItems } = useCart(); // Get totalItems from CartContext
+  const navigate = useNavigate();
+
+  console.log("Header: totalItems received from useCart():", totalItems); // Debug
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/"); // Redirect to homepage after logout
+  };
+
+  if (loadingAuth) {
+    return (
+      <header className="app-header">
+        <div className="header-content">
+          <div className="logo-container">
+            <Link to="/" className="logo-link">
+              <span className="logo-text">DroneDelights</span>
+            </Link>
+          </div>
+          <nav className="main-nav">
+            <div>Loading...</div>
+          </nav>
+        </div>
+      </header>
+    ); // Or some other loading indicator
+  }
 
   return (
-    <header className="header">
-      <div className="container">
-        <Link to="/" className="logo">
-          <img src="/images/logo.png" alt="Drone Delights" />
-        </Link>
-        
-        <nav className="nav-container">
-          <ul className="nav-list">
-            <li className="nav-item"><Link to="/">Home</Link></li>
-            <li className="nav-item"><Link to="/menu">Menu</Link></li>
-            {isLoggedIn ? (
+    <header className="app-header">
+      <div className="header-content">
+        <div className="logo-container">
+          <Link to="/" className="logo-link">
+            <span className="logo-text">DroneDelights</span>
+          </Link>
+        </div>
+        <nav className="main-nav">
+          <ul>
+            <li>
+              <Link to="/menu">Menu</Link>
+            </li>
+            <li>
+              <Link to="/cart" className="cart-link">
+                Cart
+                {totalItems > 0 && (
+                  <span className="cart-notification-badge">{totalItems}</span>
+                )}
+              </Link>
+            </li>
+            {currentUser ? (
               <>
-                <li className="nav-item">
-                  <span className="user-greeting">Hello, {user.username}!</span>
+                <li className="user-greeting">
+                  <span>Welcome, {currentUser.username}!</span>
                 </li>
-                <li className="nav-item">
-                  <button className="logout-btn" onClick={logout}>Logout</button>
+                <li>
+                  <button onClick={handleLogout} className="logout-button">
+                    Logout
+                  </button>
                 </li>
               </>
             ) : (
               <>
-                <li className="nav-item"><Link to="/login">Login</Link></li>
-                <li className="nav-item"><Link to="/register">Register</Link></li>
+                <li>
+                  <Link to="/login">Login</Link>
+                </li>
+                <li>
+                  <Link to="/register">Register</Link>
+                </li>
               </>
             )}
           </ul>
         </nav>
-        
-        <div className="cart-icon-container">
-          <Link to="/cart" className="cart-icon-link">
-            <div className="cart-icon">
-              <i className="fas fa-shopping-cart"></i>
-              {cart.totalItems > 0 && (
-                <span className="cart-count">{cart.totalItems}</span>
-              )}
-            </div>
-          </Link>
-        </div>
       </div>
     </header>
   );

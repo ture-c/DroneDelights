@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 // Initial state
 const initialState = {
   items: [],
   totalItems: 0,
-  totalPrice: 0
+  totalPrice: 0,
 };
 
 // Create context
@@ -12,85 +12,98 @@ const CartContext = createContext();
 
 // Cart reducer
 const cartReducer = (state, action) => {
+  let newState;
   switch (action.type) {
-    case 'ADD_ITEM': {
-      const existingItemIndex = state.items.findIndex(item => item.id === action.payload.id);
-      
+    case "ADD_ITEM": {
+      const itemToAdd = action.payload;
+      const existingItemIndex = state.items.findIndex(
+        (item) => item.id === itemToAdd.id
+      );
+      let updatedItems;
+
       if (existingItemIndex > -1) {
-        // Item exists, update quantity
-        const updatedItems = [...state.items];
-        updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1
-        };
-        
-        return {
-          ...state,
-          items: updatedItems,
-          totalItems: state.totalItems + 1,
-          totalPrice: state.totalPrice + action.payload.price
-        };
+        updatedItems = state.items.map((item, index) =>
+          index === existingItemIndex
+            ? { ...item, quantity: item.quantity + (itemToAdd.quantity || 1) }
+            : item
+        );
       } else {
-        // Add new item with quantity 1
-        const newItem = { ...action.payload, quantity: 1 };
-        return {
-          ...state,
-          items: [...state.items, newItem],
-          totalItems: state.totalItems + 1,
-          totalPrice: state.totalPrice + action.payload.price
-        };
+        updatedItems = [
+          ...state.items,
+          { ...itemToAdd, quantity: itemToAdd.quantity || 1 },
+        ];
       }
+
+      const newTotalItems = updatedItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+      const newTotalPrice = updatedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      newState = {
+        ...state,
+        items: updatedItems,
+        totalItems: newTotalItems,
+        totalPrice: newTotalPrice,
+      };
+      console.log("CartContext: ADD_ITEM - New state:", newState);
+      return newState;
     }
-    
-    case 'REMOVE_ITEM': {
-      const existingItem = state.items.find(item => item.id === action.payload.id);
-      
+
+    case "REMOVE_ITEM": {
+      const existingItem = state.items.find(
+        (item) => item.id === action.payload.id
+      );
+
       if (existingItem && existingItem.quantity === 1) {
-        // Remove item completely if quantity is 1
+        // Ta bort item helt om quantity är 1
         return {
           ...state,
-          items: state.items.filter(item => item.id !== action.payload.id),
+          items: state.items.filter((item) => item.id !== action.payload.id),
           totalItems: state.totalItems - 1,
-          totalPrice: state.totalPrice - existingItem.price
+          totalPrice: state.totalPrice - existingItem.price,
         };
       } else if (existingItem) {
-        // Decrease quantity if more than 1
+        // Minska quantity by 1
         return {
           ...state,
-          items: state.items.map(item => 
-            item.id === action.payload.id 
-              ? { ...item, quantity: item.quantity - 1 } 
+          items: state.items.map((item) =>
+            item.id === action.payload.id
+              ? { ...item, quantity: item.quantity - 1 }
               : item
           ),
           totalItems: state.totalItems - 1,
-          totalPrice: state.totalPrice - existingItem.price
+          totalPrice: state.totalPrice - existingItem.price,
         };
       }
       return state;
     }
-    
-    case 'UPDATE_QUANTITY': {
+
+    case "UPDATE_QUANTITY": {
       const { id, quantity } = action.payload;
-      const item = state.items.find(item => item.id === id);
-      
+      const item = state.items.find((item) => item.id === id);
+
       if (!item) return state;
-      
+
       const quantityDifference = quantity - item.quantity;
       const priceDifference = item.price * quantityDifference;
-      
+
       return {
         ...state,
-        items: state.items.map(item => 
+        items: state.items.map((item) =>
           item.id === id ? { ...item, quantity } : item
         ),
         totalItems: state.totalItems + quantityDifference,
-        totalPrice: state.totalPrice + priceDifference
+        totalPrice: state.totalPrice + priceDifference,
       };
     }
-    
-    case 'CLEAR_CART':
+
+    case "CLEAR_CART":
       return initialState;
-      
+
     default:
       return state;
   }
@@ -99,43 +112,46 @@ const cartReducer = (state, action) => {
 // Provider component
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(state));
-  }, [state]);
-  
-  // Add item to cart
+
   const addToCart = (item) => {
-    dispatch({ type: 'ADD_ITEM', payload: item });
+    dispatch({ type: "ADD_ITEM", payload: item });
   };
-  
-  // Remove item from cart
+
+  // Ta bort item från cart
   const removeFromCart = (item) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: item });
+    dispatch({ type: "REMOVE_ITEM", payload: item });
   };
-  
-  // Update item quantity
+
+  // Updatera item i cart
   const updateQuantity = (id, quantity) => {
     if (quantity < 1) return;
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+    dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
   };
-  
-  // Clear cart
+
+  // Rensa hela cart
   const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
+    dispatch({ type: "CLEAR_CART" });
   };
-  
+
+  const contextValue = {
+    cartItems: state.items,
+    totalItems: state.totalItems,
+    totalPrice: state.totalPrice,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+  };
+  // Logga provider value för debugging
+  console.log(
+    "CartContext: Provider value being provided (state.totalItems):",
+    state.totalItems,
+    "Full contextValue:",
+    contextValue
+  );
+
   return (
-    <CartContext.Provider value={{
-      cart: state,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart
-    }}>
-      {children}
-    </CartContext.Provider>
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 };
 
@@ -143,7 +159,7 @@ export const CartProvider = ({ children }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };

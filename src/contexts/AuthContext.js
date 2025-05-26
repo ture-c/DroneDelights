@@ -1,122 +1,123 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import axios from "axios"; 
 
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Hanterar laddningstillståndet för autentisering
 
-  // Check if user is already logged in on component mount
-  useEffect(() => {
-    const user = localStorage.getItem('droneDelightsUser');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
+  // Se om användaren är inloggad genom att skicka en begäran till servern
+  const checkLoginStatus = async () => {
+    setLoading(true);
+    try {
+     
+      const response = await axios.get("http://localhost:5001/api/users/me", {
+        withCredentials: true, //kakor
+      });
+      if (response.data && response.data.id) {
+        setCurrentUser(response.data);
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      console.error(
+        "Inte autentiserad eller fel vid kontroll av status:",
+        error.response ? error.response.data : error.message
+      );
+      setCurrentUser(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    checkLoginStatus();
   }, []);
 
-  // Login function
-  const login = async (username, password) => {
+  const login = async (email, password) => {
+    // setLoading(true); // Valfritt: ställ in laddningsstatus för inloggningsknappen
     try {
-      // Check for default user
-      if (username === 'user' && password === 'password') {
-        const defaultUser = { username: 'user', name: 'Test User' };
-        setCurrentUser(defaultUser);
-        localStorage.setItem('droneDelightsUser', JSON.stringify(defaultUser));
-        return { success: true };
-      }
-      
-      // Check registered users in JSON server
-      const response = await fetch(`http://localhost:3001/users?username=${username}`);
-      const users = await response.json();
-      
-      const user = users[0];
-      
-      if (user && user.password === password) {
-        delete user.password; // Don't store password in state
-        setCurrentUser(user);
-        localStorage.setItem('droneDelightsUser', JSON.stringify(user));
-        return { success: true };
-      } else {
-        return { 
-          success: false,
-          error: 'Invalid username or password'
-        };
-      }
+      const response = await axios.post(
+        "http://localhost:5001/api/users/login",
+        { email, password },
+        {
+          withCredentials: true,
+        }
+      );
+      setCurrentUser(response.data); // Servern bör returnera användarinfo vid lyckad inloggning
+      // setLoading(false);
+      return response.data; // Returnera data för potentiell omdirigering eller meddelanden
     } catch (error) {
-      console.error('Login error:', error);
-      return { 
-        success: false,
-        error: 'An error occurred during login'
-      };
+      // setLoading(false);
+      console.error(
+        "Inloggning misslyckades:",
+        error.response ? error.response.data : error.message
+      );
+      throw error; // Kasta om felet för att hantera det i Login-komponenten
     }
   };
 
-  // Register function
   const register = async (userData) => {
+    // setLoading(true);
     try {
-      // Check if username already exists
-      const checkResponse = await fetch(`http://localhost:3001/users?username=${userData.username}`);
-      const existingUsers = await checkResponse.json();
-      
-      if (existingUsers.length > 0) {
-        return {
-          success: false,
-          error: 'Username already exists'
-        };
-      }
-      
-      // Add new user
-      const response = await fetch('http://localhost:3001/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-      
-      if (response.ok) {
-        const newUser = await response.json();
-        delete newUser.password; // Don't store password in state
-        setCurrentUser(newUser);
-        localStorage.setItem('droneDelightsUser', JSON.stringify(newUser));
-        return { success: true };
-      } else {
-        return {
-          success: false,
-          error: 'Failed to create account'
-        };
-      }
+      // userData här är { username, email, password, name, address }
+      const response = await axios.post(
+        "http://localhost:5001/api/users/register",
+        userData,
+        {
+          withCredentials: true, // VIKTIGT
+        }
+      );
+      setCurrentUser(response.data); // Servern bör returnera användarinfo och logga in dem
+      // setLoading(false);
+      return response.data;
     } catch (error) {
-      console.error('Registration error:', error);
-      return {
-        success: false,
-        error: 'An error occurred during registration'
-      };
+      // setLoading(false);
+      console.error(
+        "Registrering misslyckades:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
     }
   };
 
-  // Logout function
-  const logout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem('droneDelightsUser');
+  const logout = async () => {
+    // setLoading(true);
+    try {
+      await axios.post(
+        "http://localhost:5001/api/users/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      setCurrentUser(null);
+      // setLoading(false);
+    } catch (error) {
+      // setLoading(false);
+      console.error(
+        "Utloggning misslyckades:",
+        error.response ? error.response.data : error.message
+      );
+      // Ställ fortfarande currentUser till null på frontend även om serverutloggning misslyckas av någon anledning
+      setCurrentUser(null);
+    }
   };
 
   const value = {
     currentUser,
+    setCurrentUser, // Kan behöva detta om inloggning hanteras direkt utanför denna kontext
     login,
     register,
     logout,
-    loading
+    loadingAuth: loading, // Omdöpt för att undvika konflikt om 'loading' används någon annanstans
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-//fix me
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+

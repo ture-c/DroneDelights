@@ -1,15 +1,29 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import axios from "axios";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+
+const fetchUserData = async () => {
+  try {
+    const response = await axios.get("http://localhost:5001/api/users/me", {
+      withCredentials: true, // THIS IS ESSENTIAL
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+
+fetchUserData();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
