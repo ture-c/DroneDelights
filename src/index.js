@@ -4,11 +4,14 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import axios from "axios";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </React.StrictMode>
 );
 
@@ -17,15 +20,16 @@ const fetchUserData = async () => {
     const response = await axios.get("http://localhost:5001/api/users/me", {
       withCredentials: true, // THIS IS ESSENTIAL
     });
-    console.log(response.data);
+    console.log("User data from index.js fetch:", response.data); // Lade till en mer beskrivande logg
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    if (error.response && error.response.status === 401) {
+      console.log("No user currently logged in (checked from index.js).");
+    } else {
+      console.error("Error fetching user data from index.js:", error);
+    }
   }
 };
 
 fetchUserData();
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

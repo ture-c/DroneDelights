@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import './css/PopularItems.css';
+import React, { useState, useEffect } from "react";
+import { useCart } from "../../contexts/CartContext"; 
+import "./css/PopularItems.css";
 
 const PopularItems = () => {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('droneDelightsCart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     const fetchPopularItems = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:3001/menuItems');
-        
+        setError(null);
+        const response = await fetch("http://localhost:5001/api/products");
+
         if (!response.ok) {
-          throw new Error('Failed to fetch menu items');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        setItems(data);
+        const popularItems = data.slice(0, 3); // 3 varor
+        setItems(popularItems);
       } catch (err) {
-        console.error('Error fetching menu items:', err);
+        console.error("Error fetching popular items:", err);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -33,27 +33,9 @@ const PopularItems = () => {
     fetchPopularItems();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('droneDelightsCart', JSON.stringify(cart));
-  }, [cart]);
-
-  const addToCart = (item) => {
-    const existingItem = cart.find(cartItem => cartItem.id === item.id);
-    
-    let updatedCart;
-    if (existingItem) {
-      updatedCart = cart.map(cartItem => 
-        cartItem.id === item.id 
-          ? { ...cartItem, quantity: cartItem.quantity + 1 } 
-          : cartItem
-      );
-    } else {
-      updatedCart = [...cart, { ...item, quantity: 1 }];
-    }
-    
-    setCart(updatedCart);
-    
-    alert(`${item.name} added to cart!`);
+  const handleAddToCart = (item) => {
+    addToCart(item);
+    console.log("Added to cart:", item.name);
   };
 
   if (isLoading) {
@@ -67,7 +49,6 @@ const PopularItems = () => {
     );
   }
 
-  // Display error state
   if (error) {
     return (
       <section className="popular-items-section">
@@ -76,8 +57,8 @@ const PopularItems = () => {
           <div className="error">
             <p>Sorry, we couldn't load the menu items.</p>
             <p>{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="retry-btn"
             >
               Retry
@@ -88,7 +69,6 @@ const PopularItems = () => {
     );
   }
 
-  // If no items were found
   if (items.length === 0) {
     return (
       <section className="popular-items-section">
@@ -106,36 +86,37 @@ const PopularItems = () => {
     <section className="popular-items-section">
       <div className="container">
         <h2 className="section-title">Popular Items</h2>
-        <p className="section-subtitle">Our customers' favorites, delivered by drone in minutes</p>
-        
+        <p className="section-subtitle">Our customers favorites.</p>
+
         <div className="items-grid">
-          {items.map(item => (
-            <div className="item-card" key={item.id}>
+          {items.map((item) => (
+            <div className="item-card" key={item._id}>
               <div className="item-image-container">
-                <img 
-                  src={item.image.startsWith('./') ? item.image.substring(1) : item.image} 
-                  alt={item.name} 
-                  className="item-image" 
+                <img
+                  src={item.imageUrl || "/placeholder.jpg"}
+                  alt={item.name}
+                  className="item-image"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/images/placeholder-food.jpg';
+                    e.target.src = "/placeholder.jpg";
                   }}
                 />
               </div>
               <div className="item-content">
                 <h3 className="item-name">{item.name}</h3>
-                {item.description ? (
+                {item.description && (
                   <p className="item-description">{item.description}</p>
-                ) : item.ingredients ? (
-                  <p className="item-description">
-                    {item.ingredients.join(', ')}
-                  </p>
-                ) : null}
+                )}
                 <div className="item-price-row">
-                  <span className="item-price">{item.price} kr</span>
-                  <button 
+                  <span className="item-price">
+                    $
+                    {typeof item.price === "number"
+                      ? item.price.toFixed(2)
+                      : "N/A"}
+                  </span>
+                  <button
                     className="add-to-cart-btn"
-                    onClick={() => addToCart(item)}
+                    onClick={() => handleAddToCart(item)}
                   >
                     Add to cart
                   </button>
@@ -150,3 +131,5 @@ const PopularItems = () => {
 };
 
 export default PopularItems;
+
+//Om hinner ha en slideshow

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import axios from "axios"; 
+import axios from "axios";
 
 const AuthContext = createContext(null);
 
@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const checkLoginStatus = async () => {
     setLoading(true);
     try {
-     
       const response = await axios.get("http://localhost:5001/api/users/me", {
         withCredentials: true, //kakor
       });
@@ -36,7 +35,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    // setLoading(true); // Valfritt: ställ in laddningsstatus för inloggningsknappen
     try {
       const response = await axios.post(
         "http://localhost:5001/api/users/login",
@@ -47,14 +45,14 @@ export const AuthProvider = ({ children }) => {
       );
       setCurrentUser(response.data); // Servern bör returnera användarinfo vid lyckad inloggning
       // setLoading(false);
-      return response.data; // Returnera data för potentiell omdirigering eller meddelanden
+      return response.data; 
     } catch (error) {
       // setLoading(false);
       console.error(
         "Inloggning misslyckades:",
         error.response ? error.response.data : error.message
       );
-      throw error; // Kasta om felet för att hantera det i Login-komponenten
+      throw error;
     }
   };
 
@@ -100,18 +98,17 @@ export const AuthProvider = ({ children }) => {
         "Utloggning misslyckades:",
         error.response ? error.response.data : error.message
       );
-      // Ställ fortfarande currentUser till null på frontend även om serverutloggning misslyckas av någon anledning
       setCurrentUser(null);
     }
   };
 
   const value = {
     currentUser,
-    setCurrentUser, // Kan behöva detta om inloggning hanteras direkt utanför denna kontext
+    setCurrentUser, 
     login,
     register,
     logout,
-    loadingAuth: loading, // Omdöpt för att undvika konflikt om 'loading' används någon annanstans
+    loadingAuth: loading, 
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -120,4 +117,3 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-

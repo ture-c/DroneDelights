@@ -22,7 +22,7 @@ function App() {
             {" "}
             {/*  */}
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route path="/login"  element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/menu" element={<Menu />} />
               <Route path="/cart" element={<Cart />} />

@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 2rem auto;
   padding: 1rem;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 .menu-page-title {
@@ -36,7 +36,7 @@
 }
 
 .category-btn.active {
-  background-color: #f8b500; 
+  background-color: #f8b500;
   color: white;
   border-color: #f8b500;
 }
@@ -48,6 +48,7 @@
 }
 
 .menu-item-card {
+  position: relative; /* Nödvändigt för absolut positionering*/
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -86,13 +87,13 @@
   font-size: 0.9rem;
   color: #666;
   margin-bottom: 1rem;
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 .menu-item-price {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #f8b500; 
+  color: #f8b500;
   margin-bottom: 1rem;
 }
 
@@ -106,11 +107,11 @@
   font-size: 1rem;
   font-weight: bold;
   transition: background-color 0.3s;
-  align-self: flex-start; 
+  align-self: flex-start;
 }
 
 .add-to-cart-button:hover {
-  background-color: #f8b500; 
+  background-color: #f8b500;
 }
 
 .menu-loading,
@@ -123,6 +124,15 @@
 
 .menu-error {
   color: red;
+}
+
+
+
+.product-card-link-area {
+  /*  */
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 /* Responsive adjustments */
@@ -145,7 +155,7 @@
 
 @media (max-width: 480px) {
   .menu-items-grid {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
   .menu-item-details {
     padding: 1rem;

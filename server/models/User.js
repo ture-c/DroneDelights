@@ -13,12 +13,18 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    
     match: [/\S+@\S+\.\S+/, "is invalid"],
   },
   password: {
     type: String,
     required: true,
+  },
+  address: {
+    street: { type: String, trim: true, default: "" },
+    houseNumber: { type: String, trim: true, default: "" },
+    city: { type: String, trim: true, default: "" },
+    zipCode: { type: String, trim: true, default: "" },
+    phone: { type: String, trim: true, default: "" },
   },
   createdAt: {
     type: Date,
